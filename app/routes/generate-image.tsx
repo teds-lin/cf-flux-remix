@@ -5,24 +5,25 @@ import { useActionData, Form, useNavigation, useLoaderData } from "@remix-run/re
 import type { ActionFunction, LoaderFunction } from "@remix-run/cloudflare";
 import { createAppContext } from "../context";
 
-export const loader: LoaderFunction = async ({ context }) => {
+export const loader: LoaderFunction = async ({ context }: { request: Request; context: any }) => {
   const appContext = createAppContext(context);
   const { config } = appContext;
   const models = Object.entries(config.CUSTOMER_MODEL_MAP).map(([id, path]) => ({ id, path }));
   return json({ models, config });
 };
 
-export const action: ActionFunction = async ({ request, context }) => {
+export const action: ActionFunction = async ({ request, context }: { request: Request; context: any }) => {
   const appContext = createAppContext(context);
   const { imageGenerationService, config } = appContext;
-
+  console.log("Generate image action started");
+  console.log("Config:", JSON.stringify(config, null, 2));
   const formData = await request.formData();
   const prompt = formData.get("prompt") as string;
   const enhance = formData.get("enhance") === "true";
   const modelId = formData.get("model") as string;
   const size = formData.get("size") as string;
   const numSteps = parseInt(formData.get("numSteps") as string, 10);
-
+  console.log("Form data:", { prompt, enhance, modelId, size, numSteps });
   if (!prompt) {
     return json({ error: "未找到提示詞" }, { status: 400 });
   }
@@ -39,11 +40,12 @@ export const action: ActionFunction = async ({ request, context }) => {
       size,
       numSteps
     );
+    console.log("Image generation successful");
     return json(result);
   } catch (error) {
     console.error("產生圖片時發生錯誤:", error);
-    if (error instanceof AppError) {
-      return json({ error: `產生圖片失敗: ${error.message}` }, { status: error.status || 500 });
+    if (error instanceof Error) {
+      return json({ error: `產生圖片失敗: ${error.message}` }, { status: 500 });
     }
     return json({ error: "產生圖片失敗: 未知錯誤" }, { status: 500 });
   }
