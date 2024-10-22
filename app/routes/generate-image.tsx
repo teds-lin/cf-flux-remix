@@ -260,20 +260,7 @@ const GenerateImage: FC = () => {
                     src={`data:image/jpeg;base64,${actionData.image}`} 
                     alt="Generated Image" 
                     className="w-full rounded-xl shadow-xl transition duration-300 group-hover:shadow-2xl"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent 
-                                opacity-0 group-hover:opacity-100 transition duration-300 
-                                rounded-xl flex items-end justify-center pb-4">
-                    <button 
-                      className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg 
-                                text-white hover:bg-white/30 transition duration-200"
-                      onClick={() => {
-                        // 這裡可以加入下載圖片的功能
-                      }}
-                    >
-                      下載圖片
-                    </button>
-                  </div>
+                  />                  
                 </div>
               </div>
             )}
