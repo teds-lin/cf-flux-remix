@@ -58,6 +58,7 @@ const GenerateImage: FC = () => {
   const [model, setModel] = useState(config.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"]);
   const [size, setSize] = useState("1024x1024");
   const [numSteps, setNumSteps] = useState(config.FLUX_NUM_STEPS);
+  const [isDownloading, setIsDownloading] = useState(false);
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
 
@@ -87,6 +88,39 @@ const GenerateImage: FC = () => {
 
   const handleModelChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setModel(e.target.value);
+  };
+
+  const handleDownload = async () => {
+    if (!actionData?.image) return;
+    
+    try {
+      setIsDownloading(true);
+      
+      // Convert base64 to blob
+      const response = await fetch(`data:image/jpeg;base64,${actionData.image}`);
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '_');
+      link.download = `AI_Generated_${timestamp}.jpg`;
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('下載圖片時發生錯誤:', error);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -254,13 +288,50 @@ const GenerateImage: FC = () => {
             {/* 結果顯示區域 */}
             {actionData && actionData.image && (
               <div className="mt-8 space-y-4">
-                <h2 className="text-2xl font-bold text-white">產生結果</h2>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-white">產生結果</h2>
+                  <button
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                    className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 
+                             rounded-xl text-white font-medium hover:opacity-90 
+                             transition duration-200 disabled:opacity-50 
+                             flex items-center gap-2"
+                  >
+                    {isDownloading ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                        </svg>
+                        下載中...
+                      </>
+                    ) : (
+                      <>
+                        <svg 
+                          className="w-5 h-5" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        下載圖片
+                      </>
+                    )}
+                  </button>
+                </div>
                 <div className="relative group">
                   <img 
                     src={`data:image/jpeg;base64,${actionData.image}`} 
                     alt="Generated Image" 
                     className="w-full rounded-xl shadow-xl transition duration-300 group-hover:shadow-2xl"
-                  />                  
+                  />
                 </div>
               </div>
             )}
