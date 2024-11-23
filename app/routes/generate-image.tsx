@@ -217,7 +217,7 @@ const GenerateImage: FC = () => {
                     <p className="text-purple-200 text-sm">自動翻譯提示詞為英文，以獲得更好的結果</p>
                   </div>
                   <button
-                    type="button"
+                    type="button" disabled
                     onClick={handleEnhanceToggle}
                     className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full 
                               transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 
