@@ -211,28 +211,6 @@ const GenerateImage: FC = () => {
 
               {/* 進階選項 */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between bg-white/5 p-4 rounded-xl">
-                  <div>
-                    <h3 className="text-white font-medium">提示詞翻譯</h3>
-                    <p className="text-purple-200 text-sm">自動翻譯提示詞為英文，以獲得更好的結果</p>
-                  </div>
-                  <button
-                    type="button" disabled
-                    onClick={handleEnhanceToggle}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full 
-                              transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 
-                              focus:ring-purple-500 focus:ring-offset-2 ${
-                                enhance ? 'bg-purple-500' : 'bg-gray-500'
-                              }`}
-                  >
-                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full 
-                                   bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                                     enhance ? 'translate-x-5' : 'translate-x-0'
-                                   }`} 
-                    />
-                  </button>
-                </div>
-
                 <div className="space-y-2">
                   <label htmlFor="numSteps" className="block text-purple-100 text-lg font-medium">
                     產生步數 ({numSteps})
